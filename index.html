@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手工皂小舖 · 範例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f9f7f3;
+            color: #3e3e3e;
+            padding-bottom: 2rem;
+        }
+        header {
+            background: #a8b5a2;
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        header h1 {
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 24px -8px rgba(0,40,20,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 28px -6px rgba(60,80,40,0.18);
+        }
+        .product-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #eae2d7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a3a3a3;
+            font-size: 0.9rem;
+        }
+        .product-img svg {
+            width: 40%;
+            opacity: 0.3;
+        }
+        .product-info {
+            padding: 1.2rem 1rem 1rem;
+        }
+        .product-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+        .product-desc {
+            font-size: 0.9rem;
+            color: #6b6b6b;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #5f7a5c;
+            margin-bottom: 1rem;
+        }
+        .add-to-cart {
+            background: #dbb88c;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.8rem 1rem;
+            width: 100%;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 1rem;
+            border: 1px solid #c9a074;
+        }
+        .add-to-cart:hover {
+            background: #c7a16b;
+        }
+        /* 購物車側邊欄 */
+        .cart-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #5f7a5c;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .cart-toggle span {
+            background: #f0d9b5;
+            color: #3e3e3e;
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            margin-left: 0.3rem;
+        }
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -380px;
+            width: 340px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-sidebar.open {
+            right: 0;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .cart-header h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #777;
+        }
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+        .cart-item {
+            display: flex;
+            gap: 0.8rem;
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            background: #ddd8cf;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        .cart-item-price {
+            color: #5f7a5c;
+            font-weight: 600;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+        }
+        .cart-item-actions button {
+            background: #f0f0f0;
+            border: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .cart-item-actions span {
+            min-width: 20px;
+            text-align: center;
+        }
+        .cart-footer {
+            border-top: 2px dashed #ccc;
+            padding-top: 1.2rem;
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+        }
+        .checkout-btn {
+            background: #5f7a5c;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+            z-index: 999;
+            display: none;
+        }
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌿 日常手工皂 · 簡單純淨</h1>
+    </header>
+
+    <div class="container">
+        <p style="text-align:center; color:#6f6f6f;">冷製法 · 高濃度植物油 · 在地農產</p>
+        <div class="product-grid" id="product-grid">
+            <!-- 商品將由 JavaScript 動態產生 -->
+        </div>
+    </div>
+
+    <!-- 購物車按鈕與側邊欄 -->
+    <button class="cart-toggle" id="cart-toggle">
+        🛒 購物車 <span id="cart-count">0</span>
+    </button>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>你的購物籃</h3>
+            <button class="close-cart" id="close-cart">&times;</button>
+        </div>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>總計</span>
+                <span id="cart-total">NT$ 0</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">模擬結帳</button>
+            <p style="font-size:0.8rem; color:#aaa; margin-top:0.8rem;">此為前端範例，無金流串接</p>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+        // 商品資料
+        const products = [
+            { id: 1, name: '桂花馬賽皂', desc: '72%橄欖油 · 淡雅桂花香', price: 320 },
+            { id: 2, name: '艾草平安皂', desc: '在地艾草 · 溫和舒緩', price: 280 },
+            { id: 3, name: '乳木果滋潤皂', desc: '30%乳木果 · 乾敏肌適用', price: 390 },
+            { id: 4, name: '台灣咖啡皂', desc: '古坑咖啡 · 去角質', price: 350 },
+            { id: 5, name: '嬰兒專用皂', desc: '無香精 · 全脂牛奶', price: 290 },
+            { id: 6, name: '森林複方皂', desc: '雪松＋薰衣草', price: 360 }
+        ];
+
+        // 購物車資料
+        let cart = [];
+
+        // DOM 元素
+        const productGrid = document.getElementById('product-grid');
+        const cartItemsEl = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartToggle = document.getElementById('cart-toggle');
+        const closeCart = document.getElementById('close-cart');
+        const overlay = document.getElementById('overlay');
+        const checkoutBtn = document.getElementById('checkout-btn');
+
+        // 渲染商品列表
+        function renderProducts() {
+            productGrid.innerHTML = '';
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12,6c-3.31,0-6,2.69-6,6s2.69,6,6,6s6-2.69,6-6S15.31,6,12,6z M12,16c-2.21,0-4-1.79-4-4s1.79-4,4-4s4,1.79,4,4S14.21,16,12,16z"/></svg>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-desc">${p.desc}</div>
+                        <div class="product-price">NT$ ${p.price}</div>
+                        <button class="add-to-cart" data-id="${p.id}">加入購物車</button>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+        }
+
+        // 加入購物車
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+        }
+
+        // 更新購物車顯示
+        function updateCartUI() {
+            // 更新數量
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            // 渲染購物車列表
+            cartItemsEl.innerHTML = '';
+            let totalPrice = 0;
+            cart.forEach(item => {
+                totalPrice += item.price * item.quantity;
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <div class="cart-item-img"></div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">NT$ ${item.price}</div>
+                        <div class="cart-item-actions">
+                            <button class="decrease" data-id="${item.id}">−</button>
+                            <span>${item.quantity}</span>
+                            <button class="increase" data-id="${item.id}">+</button>
+                            <button class="remove" data-id="${item.id}" style="margin-left:auto; background:none; border:none; color:#a00;">🗑️</button>
+                        </div>
+                    </div>
+                `;
+                cartItemsEl.appendChild(li);
+            });
+
+            // 綁定購物車內按鈕事件（在事件代理處理）
+            cartTotal.textContent = `NT$ ${totalPrice}`;
+        }
+
+        // 購物車內數量調整
+        function adjustCartItem(productId, action) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            if (action === 'increase') {
+                item.quantity += 1;
+            } else if (action === 'decrease') {
+                item.quantity -= 1;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+            } else if (action === 'remove') {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        // 事件監聽（利用委派）
+        document.addEventListener('click', (e) => {
+            // 加入購物車
+            if (e.target.classList.contains('add-to-cart')) {
+                const id = Number(e.target.dataset.id);
+                addToCart(id);
+            }
+
+            // 購物車內操作 (需在購物車開啟時點擊)
+            if (cartSidebar.contains(e.target)) {
+                if (e.target.classList.contains('increase')) {
+                    const id = Number(e.target.dataset.id);
+                    adjustCartItem(id, 'increase');
+                } else if (e.target.classList.contains('decrease')) {
+                    const id = Number(e.target.dataset.id);
+                    adjustCartItem(id, 'decrease');
+                } else if (e.target.classList.contains('remove')) {
+                    const id = Number(e.target.dataset.id);
+                    adjustCartItem(id, 'remove');
+                }
+            }
+        });
+
+        // 開關購物車
+        function openCart() {
+            cartSidebar.classList.add('open');
+            overlay.classList.add('show');
+        }
+        function closeCartFn() {
+            cartSidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        cartToggle.addEventListener('click', openCart);
+        closeCart.addEventListener('click', closeCartFn);
+        overlay.addEventListener('click', closeCartFn);
+
+        // 結帳按鈕（僅示範）
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('購物車是空的！');
+                return;
+            }
+            alert('感謝選購 (此為範例，無實際訂單)');
+            // 可清空購物車
+            cart = [];
+            updateCartUI();
+            closeCartFn();
+        });
+
+        // 初始化
+        renderProducts();
+        updateCartUI();
+    </script>
+</body>
+</html>
